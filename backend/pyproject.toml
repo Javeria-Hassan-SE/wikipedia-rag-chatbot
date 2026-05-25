@@ -1,0 +1,23 @@
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = [
+    "integration: requires live Qdrant and Ollama (deselected by default)",
+]
+addopts = "-m 'not integration'"
+
+[tool.coverage.run]
+source = ["app"]
+omit = [
+    "app/main.py",
+    "app/__init__.py",
+    "app/models.py",
+    "app/routes/__init__.py",
+    "app/services/__init__.py",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true

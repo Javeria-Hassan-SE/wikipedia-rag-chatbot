@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WikiChat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:           #FFFFFF;
+      --surface:      #F8F7FF;
+      --purple:       #6B21A8;
+      --purple-dark:  #581c87;
+      --purple-light: #EDE9FE;
+      --text:         #1A1A2E;
+      --text-muted:   #6B7280;
+      --border:       #E5E7EB;
+      --red:          #dc2626;
+      --red-bg:       #FEF2F2;
+      --red-border:   #FECACA;
+      --grey-bubble:  #F3F4F6;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Header ─────────────────────────────────────── */
+
+    header {
+      padding: 32px 0 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+
+    .wordmark {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--purple);
+      margin-bottom: 3px;
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* ── URL input ──────────────────────────────────── */
+
+    .url-section {
+      margin-bottom: 40px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .url-field {
+      flex: 1;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .url-field:focus {
+      border-color: var(--purple);
+    }
+
+    .url-field:disabled {
+      background: var(--surface);
+    }
+
+    .btn {
+      padding: 11px 20px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--purple);
+      color: #fff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--purple-dark);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .error-text {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--red);
+    }
+
+    /* ── Results ────────────────────────────────────── */
+
+    .results {
+      margin-bottom: 48px;
+    }
+
+    .article-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      background: var(--surface);
+      border-left: 3px solid var(--purple);
+      border-radius: 0 8px 8px 0;
+      padding: 18px 22px;
+      margin-bottom: 32px;
+    }
+
+    .summary-card p {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    /* ── Chat ───────────────────────────────────────── */
+
+    .chat-wrap {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .chat-history {
+      height: 380px;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--bg);
+    }
+
+    .empty-hint {
+      margin: auto;
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .msg {
+      max-width: 76%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 15px;
+      line-height: 1.55;
+      word-wrap: break-word;
+    }
+
+    .msg-user {
+      align-self: flex-end;
+      background: var(--purple);
+      color: #fff;
+    }
+
+    .msg-assistant {
+      align-self: flex-start;
+      background: var(--grey-bubble);
+      color: var(--text);
+    }
+
+    .msg-error {
+      align-self: flex-start;
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid var(--red-border);
+    }
+
+    .msg-thinking {
+      align-self: flex-start;
+      background: var(--grey-bubble);
+      color: var(--text-muted);
+      font-size: 20px;
+      letter-spacing: 3px;
+      padding: 8px 14px;
+    }
+
+    .chat-input-row {
+      display: flex;
+      border-top: 1px solid var(--border);
+    }
+
+    .chat-field {
+      flex: 1;
+      padding: 14px 16px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+    }
+
+    .chat-field::placeholder {
+      color: #9CA3AF;
+    }
+
+    .chat-field:disabled {
+      background: var(--surface);
+    }
+
+    .btn-send {
+      padding: 14px 20px;
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-send:hover:not(:disabled) {
+      background: var(--purple-dark);
+    }
+
+    .btn-send:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    /* ── Spinner ─────────────────────────────────────── */
+
+    .spinner {
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden { display: none !important; }
+
+    /* ── Responsive ─────────────────────────────────── */
+
+    @media (max-width: 580px) {
+      .input-row { flex-direction: column; }
+      .article-title { font-size: 22px; }
+      .chat-history { height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="wordmark">WikiChat</div>
+      <p class="tagline">Chat with any Wikipedia article</p>
+    </header>
+
+    <main>
+      <section class="url-section">
+        <div class="input-row">
+          <input
+            id="url-input"
+            class="url-field"
+            type="url"
+            placeholder="Paste a Wikipedia article URL..."
+            autocomplete="off"
+          />
+          <button id="load-btn" class="btn btn-primary" onclick="ingestArticle()">
+            Load Article
+          </button>
+        </div>
+        <p id="error-msg" class="error-text hidden"></p>
+      </section>
+
+      <section id="results" class="results hidden">
+        <h1 id="article-title" class="article-title"></h1>
+        <div class="summary-card">
+          <p id="summary-text"></p>
+        </div>
+
+        <div class="chat-wrap">
+          <div id="chat-history" class="chat-history">
+            <p class="empty-hint">Ask a question about the article.</p>
+          </div>
+          <div class="chat-input-row">
+            <input
+              id="chat-input"
+              class="chat-field"
+              type="text"
+              placeholder="Ask a question..."
+              autocomplete="off"
+            />
+            <button id="send-btn" class="btn-send" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_URL = '/api';
+
+    let chatHistory = [];
+
+    async function ingestArticle() {
+      const urlInput = document.getElementById('url-input');
+      const url = urlInput.value.trim();
+      if (!url) return;
+
+      setIngestLoading(true);
+      hideError();
+
+      try {
+        const resp = await fetch(`${API_URL}/ingest`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url }),
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          showError(data.detail || 'Failed to load article.');
+          return;
+        }
+
+        chatHistory = [];
+        renderArticle(data.title, data.summary);
+      } catch (_) {
+        showError('Cannot reach the server. Is the backend running?');
+      } finally {
+        setIngestLoading(false);
+      }
+    }
+
+    async function sendMessage() {
+      const chatInput = document.getElementById('chat-input');
+      const question = chatInput.value.trim();
+      if (!question) return;
+
+      chatInput.value = '';
+      appendMessage('user', question);
+      appendThinking();
+      setChatLoading(true);
+
+      try {
+        const resp = await fetch(`${API_URL}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question, history: chatHistory }),
+        });
+
+        const data = await resp.json();
+        removeThinking();
+
+        if (!resp.ok) {
+          appendMessage('error', data.detail || 'Something went wrong.');
+          return;
+        }
+
+        appendMessage('assistant', data.answer);
+        chatHistory.push({ role: 'user', content: question });
+        chatHistory.push({ role: 'assistant', content: data.answer });
+      } catch (_) {
+        removeThinking();
+        appendMessage('error', 'Cannot reach the server.');
+      } finally {
+        setChatLoading(false);
+      }
+    }
+
+    function renderArticle(title, summary) {
+      document.getElementById('article-title').textContent = title;
+      document.getElementById('summary-text').textContent = summary;
+      document.getElementById('results').classList.remove('hidden');
+
+      const history = document.getElementById('chat-history');
+      history.innerHTML = '<p class="empty-hint">Ask a question about the article.</p>';
+
+      document.getElementById('chat-input').focus();
+    }
+
+    function appendMessage(type, text) {
+      const history = document.getElementById('chat-history');
+      const hint = history.querySelector('.empty-hint');
+      if (hint) hint.remove();
+
+      const el = document.createElement('div');
+      el.className = `msg msg-${type}`;
+      el.textContent = text;
+      history.appendChild(el);
+      history.scrollTop = history.scrollHeight;
+    }
+
+    function appendThinking() {
+      const history = document.getElementById('chat-history');
+      const el = document.createElement('div');
+      el.id = 'thinking';
+      el.className = 'msg msg-thinking';
+      el.textContent = '···';
+      history.appendChild(el);
+      history.scrollTop = history.scrollHeight;
+    }
+
+    function removeThinking() {
+      const el = document.getElementById('thinking');
+      if (el) el.remove();
+    }
+
+    function setIngestLoading(on) {
+      const btn = document.getElementById('load-btn');
+      const input = document.getElementById('url-input');
+      btn.disabled = on;
+      input.disabled = on;
+      btn.innerHTML = on
+        ? '<span class="spinner"></span>Loading…'
+        : 'Load Article';
+    }
+
+    function setChatLoading(on) {
+      document.getElementById('send-btn').disabled = on;
+      document.getElementById('chat-input').disabled = on;
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function hideError() {
+      document.getElementById('error-msg').classList.add('hidden');
+    }
+
+    document.getElementById('chat-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    document.getElementById('url-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') ingestArticle();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+fastapi==0.124.4
+uvicorn[standard]==0.33.0
+httpx==0.28.1
+beautifulsoup4==4.14.3
+lxml==6.1.1
+qdrant-client==1.12.1
+langchain-text-splitters==0.2.4
+pydantic-settings==2.8.1
+eval_type_backport==0.2.0

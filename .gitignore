@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+htmlcov/
+.coverage
+*.egg-info/
+
+# Env
+.env
+backend/.env
+
+# OS
+.DS_Store
+Thumbs.db
