@@ -343,7 +343,7 @@
   </div>
 
   <script>
-    const API_URL = '/api';
+    const API_URL = window.location.port === '8080' ? '/api' : 'http://localhost:8001';
 
     let chatHistory = [];
 
